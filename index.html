@@ -4,38 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control de Residuos</title>
+    <!-- Tailwind CSS para los estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para los íconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Evita el zoom automático molesto en dispositivos móviles al clickear inputs */
-        input[type="number"], input[type="date"] { font-size: 16px; }
+        input[type="number"], input[type="date"], input[type="time"] { font-size: 16px; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex items-center justify-center p-0 sm:p-4">
 
+    <!-- PANTALLA DE ÉXITO (Oculta por defecto) -->
     <div id="success-screen" class="hidden min-h-screen bg-white w-full flex-col items-center justify-center p-6 absolute top-0 left-0 z-50">
         <i class="fa-solid fa-circle-check text-teal-500 mb-4 animate-bounce" style="font-size: 90px;"></i>
         <h2 class="text-3xl font-bold text-gray-800 text-center">¡Carga Exitosa!</h2>
         <p class="text-gray-600 mt-2 text-center text-lg">Los datos se han guardado correctamente en la planilla.</p>
     </div>
+
     <!-- PANTALLA PRINCIPAL (Optimizado para Celular y Tablet) -->
     <div id="main-screen" class="w-full max-w-md md:max-w-lg bg-white min-h-screen sm:min-h-0 sm:rounded-2xl sm:shadow-2xl overflow-hidden flex flex-col justify-between sm:justify-start">
         
-        <!-- Header -->
+        <!-- Header sin puesto de vigilancia -->
         <div class="bg-teal-700 text-white p-6 text-center shadow-md">
             <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wider">Control de Residuos</h1>
         </div>
 
-        <form id="data-form" class="p-6 space-y-8 flex-1 flex flex-col justify-between sm:justify-start">
+        <form id="data-form" class="p-6 space-y-6 flex-1 flex flex-col justify-between sm:justify-start">
             
-            <div class="space-y-8">
+            <div class="space-y-6">
+                <!-- 1. Selección de Material -->
                 <div class="space-y-3">
                     <label class="block text-lg font-bold text-slate-700">1. Seleccione el Tipo de Residuo</label>
                     <div class="grid grid-cols-2 gap-4" id="material-buttons">
+                        <!-- Orgánico -->
                         <button type="button" onclick="selectMaterial('Orgánico', this)" class="material-btn flex flex-col items-center justify-center py-6 px-4 rounded-2xl border-2 transition-all duration-200 bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100" data-color-bg="bg-emerald-50" data-color-text="text-emerald-700" data-color-border="border-emerald-400">
                             <i class="fa-solid fa-leaf text-4xl mb-3"></i>
                             <span class="font-extrabold text-xl">Orgánico</span>
                         </button>
+                        <!-- Inorgánico -->
                         <button type="button" onclick="selectMaterial('Inorgánico', this)" class="material-btn flex flex-col items-center justify-center py-6 px-4 rounded-2xl border-2 transition-all duration-200 bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100" data-color-bg="bg-sky-50" data-color-text="text-sky-700" data-color-border="border-sky-400">
                             <i class="fa-solid fa-recycle text-4xl mb-3"></i>
                             <span class="font-extrabold text-xl">Inorgánico</span>
@@ -43,6 +50,7 @@
                     </div>
                 </div>
 
+                <!-- 2. Cantidad -->
                 <div class="space-y-3">
                     <label class="block text-lg font-bold text-slate-700">2. Ingrese el Peso</label>
                     <div class="flex items-center gap-3">
@@ -53,17 +61,26 @@
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <label class="block text-lg font-bold text-slate-700">3. Fecha de Registro</label>
-                    <input type="date" id="date" class="w-full text-xl p-4 border-2 border-slate-300 rounded-2xl text-slate-700 font-semibold focus:border-teal-600 focus:outline-none bg-slate-50">
+                <!-- 3. Fecha y Hora (En la misma fila para ahorrar espacio en móviles) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-slate-700">3. Fecha de Registro</label>
+                        <input type="date" id="date" class="w-full text-lg p-4 border-2 border-slate-300 rounded-2xl text-slate-700 font-semibold focus:border-teal-600 focus:outline-none bg-slate-50">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-slate-700">4. Hora de Registro</label>
+                        <input type="time" id="time" class="w-full text-lg p-4 border-2 border-slate-300 rounded-2xl text-slate-700 font-semibold focus:border-teal-600 focus:outline-none bg-slate-50">
+                    </div>
                 </div>
 
+                <!-- Mensaje de Error -->
                 <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl flex items-center">
                     <i class="fa-solid fa-circle-exclamation mr-2 text-xl"></i>
                     <p class="font-medium">Error al guardar. Verifique su conexión e intente de nuevo.</p>
                 </div>
             </div>
 
+            <!-- Botón Enviar -->
             <button type="submit" id="submit-btn" disabled class="w-full py-5 rounded-2xl text-2xl font-black text-white shadow-lg transition-all flex justify-center items-center bg-slate-400 cursor-not-allowed mt-4 sm:mt-8">
                 <span id="btn-text">ENVIAR DATOS</span>
                 <i id="btn-spinner" class="fa-solid fa-spinner fa-spin hidden ml-3 text-2xl"></i>
@@ -73,15 +90,25 @@
 
     <script>
         // --- CONFIGURACIÓN ---
-        // Tu URL de Google Apps Script ya está vinculada aquí de forma fija
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgE4XzeIFWkXyriuBrWCoox-y4LdaRa3MLIjZw00T7cJjef2a5Z8oDVQPkioVXjS8V/exec';
+        // Tu URL de Google Apps Script ya vinculada
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWYRrSThO4cjZQ7S3rr1DR3Li6qfT6n8-d9lSm9Ir7a0kgeX3F8rYYuPbO3AkYtHF4/exec';
         // ---------------------
 
         let currentMaterial = '';
-        const currentUnit = 'Kilos'; // Fijado en Kilos para simplificar la app
+        const currentUnit = 'Kilos'; 
 
-        // Colocar la fecha actual por defecto
-        document.getElementById('date').valueAsDate = new Date();
+        // Colocar la fecha actual por defecto y cargar la hora actual al abrir
+        function establecerFechaYHoraActual() {
+            document.getElementById('date').valueAsDate = new Date();
+            
+            const now = new Date();
+            const horas = String(now.getHours()).padStart(2, '0');
+            const minutos = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('time').value = `${horas}:${minutos}`;
+        }
+
+        // Ejecutar al cargar la página
+        establecerFechaYHoraActual();
 
         function selectMaterial(material, buttonElement) {
             currentMaterial = material;
@@ -122,6 +149,7 @@
             
             const amount = document.getElementById('amount').value;
             const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
             const submitBtn = document.getElementById('submit-btn');
             const btnText = document.getElementById('btn-text');
             const btnSpinner = document.getElementById('btn-spinner');
@@ -135,6 +163,7 @@
 
             const data = {
                 fecha: date,
+                hora: time, // Nuevo dato enviado
                 material: currentMaterial,
                 cantidad: amount,
                 unidad: currentUnit
@@ -160,9 +189,11 @@
                     document.getElementById('success-screen').classList.remove('flex');
                     document.getElementById('main-screen').classList.remove('hidden');
                     
-                    // Limpieza de campos
+                    // Limpieza de campos y actualización de hora para el próximo registro
                     document.getElementById('amount').value = '';
                     currentMaterial = '';
+                    establecerFechaYHoraActual();
+                    
                     const buttons = document.querySelectorAll('.material-btn');
                     buttons.forEach(btn => {
                         btn.className = "material-btn flex flex-col items-center justify-center py-6 px-4 rounded-2xl border-2 transition-all duration-200 bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100";
